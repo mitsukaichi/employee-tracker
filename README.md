@@ -25,3 +25,7 @@ Design the database schema as shown in the following image:
 
 
 You might want to use a separate file that contains functions for performing specific SQL queries you'll need to use. A constructor function or class could be helpful for organizing these. You might also want to include a `seeds.sql` file to pre-populate your database, making the development of individual features much easier.
+
+## Resources referred to 
+- [console: table() method](https://developer.mozilla.org/en-US/docs/Web/API/console/table)
+- [A table name as a variable](https://stackoverflow.com/questions/2838490/a-table-name-as-a-variable)

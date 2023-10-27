@@ -13,6 +13,7 @@ const db = mysql.createConnection(
     },
     console.log(`Connected to the classlist_db database.`)
   );
+
  
 function init() {
     inquirer
@@ -23,13 +24,45 @@ function init() {
             case "View all departments":
                 db.query('SELECT * FROM department', function (err, results) {
                     if(results){
-                        results.forEach(function(name){
-                        console.log(name)
-                        })
+                        console.table(results);
                     };
                     if(err){
                         console.log(err)
                     }
+                });
+                break;
+            case "View all roles":
+                db.query('SELECT * FROM role', function (err, results) {
+                    if(results){
+                        console.table(results);
+                    };
+                    if(err){
+                        console.log(err)
+                    }
+                });
+                break;
+            case "View all employees":
+                db.query('SELECT * FROM employees', function (err, results) {
+                    if(results){
+                        console.table(results);
+                    };
+                    if(err){
+                        console.log(err)
+                    }
+                });
+                break;
+            case "Add a department":
+                inquirer
+                .prompt(question.add_department)
+                .then((response) => {
+                    db.query('INSERT INTO department (name) VALUES (?)',[response.department_name], function (err, results){
+                        if(results){
+                            console.log('department is successfully added')
+                        };
+                        if(err){
+                            console.log(err)
+                        }
+                    })
                 });
                 break;
         }
@@ -37,16 +70,4 @@ function init() {
 };
 
 init();
-
-
-// // Query database
-// db.query('SELECT * FROM students', function (err, results) {
-
-//     if(results){
-//       results.forEach(function(student){
-//       console.log(student)
-//     })
-//     }
-    
-//   });
   
