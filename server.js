@@ -12,7 +12,7 @@ const db = mysql.createConnection(
       database: 'people_db'
     },
     console.log(`Connected to the classlist_db database.`)
-  );
+);
 
  
 function init() {
@@ -65,8 +65,32 @@ function init() {
                     })
                 });
                 break;
+            case "Add a role":
+                question.getActiveDepartment((outputQuestion) => {
+                    inquirer
+                    .prompt(outputQuestion)
+                    .then((response) => {
+                        const {role_name, salary} = response;
+                        db.query('SELECT id FROM department WHERE name = ?',[response.department[0]], function (err, results){
+                            if(results){
+                                db.query('INSERT INTO role (title, salary, department_id) VALUES (?,?,?)',[role_name, salary, results[0].id], function (err, results){
+                                    if(results){
+                                        console.log("New role is added");
+                                    };
+                                    if(err){
+                                        console.log(err);
+                                    }
+                                })
+                            };
+                            if(err){
+                                console.log(err)
+                            }
+                        })
+                    });
+                });    
+                break;
         }
-    });
+    })    
 };
 
 init();
