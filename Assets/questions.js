@@ -91,6 +91,7 @@ const getActiveRoles = new Promise((resolve, reject) => {
 function addEmployee() {
     return getActiveRoles
         .then((result) => {
+            result.employees.push("None");
             const addEmployeeQuestions = [
                 {
                     type: "input",
