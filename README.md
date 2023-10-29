@@ -29,3 +29,4 @@ You might want to use a separate file that contains functions for performing spe
 ## Resources referred to 
 - [console: table() method](https://developer.mozilla.org/en-US/docs/Web/API/console/table)
 - [A table name as a variable](https://stackoverflow.com/questions/2838490/a-table-name-as-a-variable)
+- [MySQL, Concatenate two columns](https://stackoverflow.com/questions/10346302/mysql-concatenate-two-columns)

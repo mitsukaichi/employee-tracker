@@ -1,6 +1,4 @@
 USE people_db;
 
-
-INSERT INTO department (name)
-VALUES ("finance"),
-       ("engineering");
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES ("Sarita","Hatfield",1,1);

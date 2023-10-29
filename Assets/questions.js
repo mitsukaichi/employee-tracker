@@ -65,5 +65,58 @@ function getActiveDepartment(cb) {
     });
 };
 
+const getActiveRoles = new Promise((resolve, reject) => {
+    db.query("SELECT *, CONCAT(first_name, ' ', last_name) AS full_name  FROM role LEFT JOIN employee ON role.id = employee.role_id", function (err, results) {
+        if(results){
+            let output = {roles: [], employees: []};
+            let activeRoles = [];
+            let activeEmployees = [];
+            for (i = 0; i < results.length; i++) {
+                if (!activeRoles.includes(results[i].title)){
+                    activeRoles.push(results[i].title);
+                }
+            };
+            for (i = 0; i < results.length; i++) {
+                activeEmployees.push(results[i].full_name);
+            };
+            output.roles = activeRoles;
+            output.employees = activeEmployees;
+            resolve(output);
+        } else {
+            reject (err);
+        }; 
+    });
+});
 
-module.exports = {main_question, add_department, addRole, getActiveDepartment};
+function addEmployee() {
+    return getActiveRoles
+        .then((result) => {
+            const addEmployeeQuestions = [
+                {
+                    type: "input",
+                    name: "employee_first_name",
+                    message: "Provide a first name of a new employee" 
+                },
+                {
+                    type: "input",
+                    name: "employee_last_name",
+                    message: "Provide a last name of a new employee" 
+                },
+                {
+                    type: "checkbox",
+                    name: "employee_role",
+                    message: "Select a role of the new employee",
+                    choices: result.roles
+                },
+                {
+                    type: "checkbox",
+                    name: "employee_manager",
+                    message: "Select a manager of the new employee",
+                    choices: result.employees
+                },
+            ];
+            return addEmployeeQuestions;
+        }) 
+};
+
+module.exports = {main_question, add_department, addRole, getActiveDepartment, addEmployee};
