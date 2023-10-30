@@ -16,13 +16,14 @@ function init() {
     inquirer
     .prompt(question.main_question)
     .then((response) => {
-        let selectedAction = response.action_type[0];
+        selectedAction = response.action_type[0];
         switch (selectedAction) {
             case "View all departments":
-                db.query('SELECT id,name FROM department', function (err, results) {
-                    if(results){
-                        console.table(results);
-                        return(results);
+                db.query('SELECT id,name FROM department', function (err, result) {
+                    if(result){
+                        console.log("");
+                        console.table(result);
+                        init();
                     };
                     if(err){
                         console.log(err)
@@ -30,9 +31,11 @@ function init() {
                 });
                 break;
             case "View all roles":
-                db.query('SELECT role.id, title, salary, department.name FROM role LEFT JOIN department ON role.department_id = department.id', function (err, results) {
-                    if(results){
-                        console.table(results);
+                db.query('SELECT role.id, title, salary, department.name FROM role LEFT JOIN department ON role.department_id = department.id', function (err, result) {
+                    if(result){
+                        console.log("");
+                        console.table(result);
+                        init();
                     };
                     if(err){
                         console.log(err)
@@ -40,9 +43,11 @@ function init() {
                 });
                 break;
             case "View all employees":
-                db.query('SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(manager.first_name, " ", manager.last_name) AS manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN (SELECT id, first_name, last_name from employee) AS manager ON employee.manager_id = manager.id', function (err, results) {
-                    if(results){
-                        console.table(results);
+                db.query('SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(manager.first_name, " ", manager.last_name) AS manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN (SELECT id, first_name, last_name from employee) AS manager ON employee.manager_id = manager.id', function (err, result) {
+                    if(result){
+                        console.log("");
+                        console.table(result);
+                        init();
                     };
                     if(err){
                         console.log(err)
@@ -53,15 +58,19 @@ function init() {
                 inquirer
                 .prompt(question.add_department)
                 .then((response) => {
-                    db.query('INSERT INTO department (name) VALUES (?)',[response.department_name], function (err, results){
-                        if(results){
-                            console.log('department is successfully added')
+                    db.query('INSERT INTO department (name) VALUES (?)',[response.department_name], function (err, result){
+                        if(result){
+                            return(result);
                         };
                         if(err){
                             console.log(err)
                         }
                     })
-                });
+                })
+                .then((result) => {
+                    console.log('department is successfully added');
+                    init();
+                })
                 break;
             case "Add a role":
                 question.getActiveDepartment((outputQuestion) => {
@@ -71,9 +80,9 @@ function init() {
                         const {role_name, salary} = response;
                         db.query('SELECT id FROM department WHERE name = ?',[response.department[0]], function (err, results){
                             if(results){
-                                db.query('INSERT INTO role (title, salary, department_id) VALUES (?,?,?)',[role_name, salary, results[0].id], function (err, results){
-                                    if(results){
-                                        console.log("New role is added");
+                                db.query('INSERT INTO role (title, salary, department_id) VALUES (?,?,?)',[role_name, salary, results[0].id], function (err, result){
+                                    if(result) {
+                                        return(result);
                                     };
                                     if(err){
                                         console.log(err);
@@ -84,7 +93,11 @@ function init() {
                                 console.log(err)
                             }
                         })
-                    });
+                    })
+                    .then((result) => {
+                        console.log("New role is added");
+                        init();
+                    })
                 });    
                 break;
             case "Add an employee":
@@ -99,9 +112,9 @@ function init() {
                             if(results){
                                 const role_id = results[0].id;
                                 if (employee_manager === "None") {
-                                    db.query('INSERT INTO employee (first_name, last_name, role_id) VALUES (?,?,?)',[employee_first_name,employee_last_name,role_id], function(err,results){
-                                        if(results){
-                                            console.log(`${employee_first_name} ${employee_last_name} was successfully added`)
+                                    db.query('INSERT INTO employee (first_name, last_name, role_id) VALUES (?,?,?)',[employee_first_name,employee_last_name,role_id], function(err,result){
+                                        if(result){
+                                            return(result);
                                         };
                                         if(err){
                                             console.log(err);
@@ -111,9 +124,9 @@ function init() {
                                     db.query('SELECT id FROM employee WHERE CONCAT(first_name, " ", last_name) = ?',[employee_manager], function (err, results) {
                                         if(results){
                                             const manager_id = results[0].id;
-                                            db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)',[employee_first_name,employee_last_name,role_id,manager_id], function(err,results){
-                                                if(results){
-                                                    console.log(`${employee_first_name} ${employee_last_name} was successfully added`)
+                                            db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)',[employee_first_name,employee_last_name,role_id,manager_id], function(err,result){
+                                                if(result){
+                                                    return(result);
                                                 };
                                                 if(err){
                                                     console.log(err);
@@ -132,7 +145,12 @@ function init() {
                         })
                         
                     })
-                })
+                    .then((result) => {
+                        console.log(`A new employee was successfully added`);
+                        init();
+                    });
+                });
+            // case "Add an employee":
         }
     })
 };

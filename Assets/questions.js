@@ -76,7 +76,9 @@ const getActiveRoles = new Promise((resolve, reject) => {
                 }
             };
             for (i = 0; i < results.length; i++) {
-                activeEmployees.push(results[i].full_name);
+                if (results[i].full_name){ // Not add null to the array when there is no employee in the database
+                    activeEmployees.push(results[i].full_name);
+                }
             };
             output.roles = activeRoles;
             output.employees = activeEmployees;
@@ -116,6 +118,7 @@ function addEmployee() {
                 },
             ];
             return addEmployeeQuestions;
+            
         }) 
 };
 
