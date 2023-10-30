@@ -282,7 +282,42 @@ function init() {
                     if(err){
                         console.log(err);
                     }
-                })
+                });
+                break;
+            case "View total utilized budget of a department":
+                db.query('SELECT name FROM department', function (err, result){
+                    if(result) {
+                        const departmentList = [];
+                        for (i = 0; i < result.length; i++){
+                            departmentList.push(result[i].name);
+                        }
+                        inquirer
+                        .prompt(
+                            {
+                                type: "checkbox",
+                                name: "department",
+                                message: "Select the department to view the total budget",
+                                choices: departmentList
+                            }
+                        )
+                        .then((response) => {
+                            db.query('SELECT department.name AS department_name, SUM(salary) AS total_budget FROM role JOIN department ON role.department_id = department.id JOIN employee ON role.id = employee.role_id WHERE department.name = ? GROUP BY 1;',[response.department[0]], function(err, result){
+                                if(result){
+                                    console.log("");
+                                    console.table(result);
+                                    init();
+                                }
+                                if(err){
+                                    console.log(err);
+                                }
+                            })
+                        })
+                    }
+                    if(err){
+                        console.log(err);
+                    }
+                });
+                break;
         }
     })    
 };
