@@ -31,7 +31,7 @@ function init() {
                 });
                 break;
             case "View all roles":
-                db.query('SELECT role.id, title, salary, department.name FROM role LEFT JOIN department ON role.department_id = department.id', function (err, result) {
+                db.query('SELECT role.id, title, salary, department.name AS department FROM role LEFT JOIN department ON role.department_id = department.id', function (err, result) {
                     if(result){
                         console.log("");
                         console.table(result);
@@ -43,7 +43,7 @@ function init() {
                 });
                 break;
             case "View all employees":
-                db.query('SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(manager.first_name, " ", manager.last_name) AS manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN (SELECT id, first_name, last_name from employee) AS manager ON employee.manager_id = manager.id', function (err, result) {
+                db.query('SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, CONCAT(manager.first_name, " ", manager.last_name) AS manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN (SELECT id, first_name, last_name from employee) AS manager ON employee.manager_id = manager.id', function (err, result) {
                     if(result){
                         console.log("");
                         console.table(result);
@@ -181,6 +181,41 @@ function init() {
                         init();
                     })
             })
+            case "View employees by department":
+                db.query('SELECT id, name FROM department', function(err, results) {
+                    if(results) {
+                        let activeDepartments = [];
+                        for (i = 0; i < results.length; i++) {
+                            activeDepartments.push(results[i].name);
+                        };
+                        inquirer
+                        .prompt(
+                            [
+                                {
+                                    type: "checkbox",
+                                    name: "department",
+                                    message: "Select the department to see the employees",
+                                    choices: activeDepartments
+                                }
+                            ]
+                        )
+                        .then((response) => {
+                            db.query('SELECT department.name AS department, CONCAT(first_name, " ", last_name) AS employee_name FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id WHERE department.name = ?;',[response.department[0]],function(err,result){
+                                if(result){
+                                    console.log("");
+                                    console.table(result);
+                                    init();
+                                }
+                                if(err){
+                                    console.log(err)
+                                }
+                            })
+                        })
+                    }
+                    if(err){
+                        console.log(err)
+                    }
+                })
         }
     })    
 };
