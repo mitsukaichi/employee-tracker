@@ -180,7 +180,8 @@ function init() {
                         console.log('The employee role was successfully updated');
                         init();
                     })
-            })
+                });
+                break;
             case "View employees by department":
                 db.query('SELECT id, name FROM department', function(err, results) {
                     if(results) {
@@ -214,6 +215,72 @@ function init() {
                     }
                     if(err){
                         console.log(err)
+                    }
+                });
+                break;
+            case "Update employee manager":
+                db.query('SELECT CONCAT(first_name, " ", last_name) AS name FROM employee',function(err,results){
+                    if(results){
+                        let employeeList = [];
+                        for (i = 0; i < results.length; i++) {
+                            employeeList.push(results[i].name);
+                        };
+                        inquirer
+                        .prompt(
+                            {
+                                type: "checkbox",
+                                name: "employee",
+                                message: "Select the employee you want to update its manager",
+                                choices: employeeList
+                            }
+                        )
+                        .then((response) => {
+                            const selectedEmployeeName = response.employee[0];
+                            db.query('SELECT manager.name FROM employee LEFT JOIN (SELECT id, CONCAT (first_name, " ", last_name) AS name FROM employee) AS manager ON employee.manager_id = manager.id WHERE CONCAT (employee.first_name, " ", employee.last_name) = ?;',[response.employee[0]],function(err, result){
+                                if(result){
+                                    const managerName = result[0].name;
+                                    const filteredEmployeeList = employeeList.filter((employee) => (employee !== selectedEmployeeName && employee !== managerName));
+                                    inquirer
+                                    .prompt(
+                                        {
+                                            type: "checkbox",
+                                            name: "new_manager",
+                                            message: "Select the new manager of the employee",
+                                            choices: filteredEmployeeList
+                                        }
+                                    )
+                                    .then((response) => {
+                                        const newManager = response.new_manager[0];
+                                        db.query('SELECT id FROM employee WHERE CONCAT(first_name, " ", last_name) = ?;',[newManager], function(err,results){
+                                            if (results) {
+                                                const newManagerId = results[0].id;
+                                                db.query('UPDATE employee SET manager_id = ? WHERE CONCAT(first_name, " ", last_name) = ?;',[newManagerId, selectedEmployeeName], function (err, result) {
+                                                    if(result){
+                                                        return(result);
+                                                    }
+                                                    if(err){
+                                                        console.log(err);
+                                                    }
+                                                })
+                                            }
+                                            if (err) {
+                                                console.log(err);
+                                            }
+                                        })
+                                    })
+                                    .then((result) => {
+                                        console.log(`manager was successfully updated`);
+                                        init();
+                                    })
+                                }
+                                if(err){
+                                    console.log(err);
+                                }
+                            } )
+                        })
+                    }
+                    if(err){
+                        console.log(err);
                     }
                 })
         }
