@@ -150,6 +150,7 @@ function init() {
                         init();
                     });
                 });
+                break;
             case "Update an employee role":
                 question.updateEmployeeRole().then((outputQuestion) => {
                     inquirer
