@@ -323,7 +323,9 @@ function init() {
                     if(results){
                         const managerList = [];
                         for (i = 0; i < results.length; i++) {
-                            managerList.push(results[i].name);
+                            if(!managerList.includes(results[i].name)){
+                                managerList.push(results[i].name);
+                            }
                         };
                         inquirer
                         .prompt(
@@ -352,6 +354,138 @@ function init() {
                     }
                 });
                 break;
+            case "Delete department":
+                db.query('SELECT name FROM department', function (err, result){
+                    if(result) {
+                        const departmentList = [];
+                        for (i = 0; i < result.length; i++){
+                            departmentList.push(result[i].name);
+                        }
+                        inquirer
+                        .prompt(
+                            {
+                                type: "checkbox",
+                                name: "department",
+                                message: "Select the department you want to delete",
+                                choices: departmentList
+                            }
+                        )
+                        .then((response) => {
+                            db.query('DELETE FROM department WHERE name = ?;',[response.department[0]], function(err, result){
+                                if(result){
+                                    console.log(`${response.department[0]} is deleted`);
+                                    init();
+                                }
+                                if(err){
+                                    console.log(err);
+                                }
+                            })
+                        })
+                    }
+                    if(err){
+                        console.log(err);
+                    }
+                });
+                break;
+            case "Delete department":
+                db.query('SELECT name FROM department', function (err, result){
+                    if(result) {
+                        const departmentList = [];
+                        for (i = 0; i < result.length; i++){
+                            departmentList.push(result[i].name);
+                        }
+                        inquirer
+                        .prompt(
+                            {
+                                type: "checkbox",
+                                name: "department",
+                                message: "Select the department you want to delete",
+                                choices: departmentList
+                            }
+                        )
+                        .then((response) => {
+                            db.query('DELETE FROM department WHERE name = ?;',[response.department[0]], function(err, result){
+                                if(result){
+                                    console.log(`${response.department[0]} is deleted`);
+                                    init();
+                                }
+                                if(err){
+                                    console.log(err);
+                                }
+                            })
+                        })
+                    }
+                    if(err){
+                        console.log(err);
+                    }
+                });
+                break;
+            case "Delete role":
+                db.query('SELECT title FROM role', function (err, result){
+                    if(result) {
+                        const roleList = [];
+                        for (i = 0; i < result.length; i++){
+                            roleList.push(result[i].title);
+                        }
+                        inquirer
+                        .prompt(
+                            {
+                                type: "checkbox",
+                                name: "role",
+                                message: "Select the role you want to delete",
+                                choices: roleList
+                            }
+                        )
+                        .then((response) => {
+                            db.query('DELETE FROM role WHERE title = ?;',[response.role[0]], function(err, result){
+                                if(result){
+                                    console.log(`${response.role[0]} is deleted`);
+                                    init();
+                                }
+                                if(err){
+                                    console.log(err);
+                                }
+                            })
+                        })
+                    }
+                    if(err){
+                        console.log(err);
+                    }
+                });
+                break;
+            case "Delete employee":
+                db.query('SELECT CONCAT(first_name, " " , last_name) AS name FROM employee', function (err, result){
+                    if(result) {
+                        const employeeList = [];
+                        for (i = 0; i < result.length; i++){
+                            employeeList.push(result[i].name);
+                        }
+                        inquirer
+                        .prompt(
+                            {
+                                type: "checkbox",
+                                name: "name",
+                                message: "Select the employee you want to delete",
+                                choices: employeeList
+                            }
+                        )
+                        .then((response) => {
+                            db.query('DELETE FROM employee WHERE CONCAT(first_name, " " , last_name) = ?;',[response.name[0]], function(err, result){
+                                if(result){
+                                    console.log(`${response.name[0]} is deleted`);
+                                    init();
+                                }
+                                if(err){
+                                    console.log(err);
+                                }
+                            })
+                        })
+                    }
+                    if(err){
+                        console.log(err);
+                    }
+                });
+                break
         }
     })    
 };
