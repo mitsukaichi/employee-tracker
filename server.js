@@ -318,6 +318,40 @@ function init() {
                     }
                 });
                 break;
+            case "View employees by manager":
+                db.query('SELECT manager.name FROM employee JOIN (SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employee) AS manager ON employee.manager_id = manager.id;', function(err, results){
+                    if(results){
+                        const managerList = [];
+                        for (i = 0; i < results.length; i++) {
+                            managerList.push(results[i].name);
+                        };
+                        inquirer
+                        .prompt(
+                            {
+                                type: "checkbox",
+                                name: "manager",
+                                message: "Select a manager to view all the reportees",
+                                choices: managerList
+                            }
+                        )
+                        .then((response) => {
+                            db.query('SELECT CONCAT(employee.first_name, " ", employee.last_name) AS name FROM employee JOIN (SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employee) AS manager ON employee.manager_id = manager.id WHERE manager.name =?',[response.manager[0]], function(err, results){
+                                if(results){
+                                    console.log("");
+                                    console.table(results);
+                                    init();
+                                }
+                                if(err){
+                                    console.log(err);
+                                }
+                            })
+                        })
+                    }
+                    if(err){
+                        console.log(err);
+                    }
+                });
+                break;
         }
     })    
 };
