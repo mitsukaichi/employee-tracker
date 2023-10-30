@@ -150,9 +150,38 @@ function init() {
                         init();
                     });
                 });
-            // case "Add an employee":
+            case "Update an employee role":
+                question.updateEmployeeRole().then((outputQuestion) => {
+                    inquirer
+                    .prompt(outputQuestion)
+                    .then((response) => {
+                        const {employee, employee_role} = response;
+                        const employee_first_name = employee[0].split(' ')[0];
+                        const employee_last_name = employee[0].split(' ')[1];
+                        db.query('SELECT id FROM role WHERE title = ?',[employee_role], function(err, results) {
+                            if (results) {
+                                const role_id = results[0].id;
+                                db.query('UPDATE employee SET role_id = ? WHERE first_name = ? AND last_name = ?;',[role_id, employee_first_name, employee_last_name], function(err, results){
+                                    if(results){
+                                        return(results);
+                                    };
+                                    if(err){
+                                        console.log(err);
+                                    }
+                                })
+                            }
+                            if(err){
+                                console.log(err);
+                            }
+                        })
+                    })
+                    .then((results) => {
+                        console.log('The employee role was successfully updated');
+                        init();
+                    })
+            })
         }
-    })
+    })    
 };
 
 init();

@@ -118,8 +118,28 @@ function addEmployee() {
                 },
             ];
             return addEmployeeQuestions;
-            
         }) 
 };
 
-module.exports = {main_question, add_department, addRole, getActiveDepartment, addEmployee};
+function updateEmployeeRole() {
+    return getActiveRoles
+        .then((result) => {
+            const updateEmployeeQuestions = [
+                {
+                    type: "checkbox",
+                    name: "employee",
+                    message: "Select an employee to update",
+                    choices: result.employees
+                },
+                {
+                    type: "checkbox",
+                    name: "employee_role",
+                    message: "Select a new role for the employee",
+                    choices: result.roles
+                }
+            ];
+            return updateEmployeeQuestions;
+        })
+}
+
+module.exports = {main_question, add_department, addRole, getActiveDepartment, addEmployee, updateEmployeeRole};
